@@ -31,8 +31,6 @@ def create_trees(X, y):
 
     decTrees = [decTree_1, decTree_2, decTree_4, decTree_8, decTree_none]
 
-    type(decTrees)
-
     for decTree in decTrees:
     	decTree.fit(X, y)
 
@@ -49,4 +47,4 @@ if __name__ == "__main__":
     decTrees2 = create_trees(dataset2_X, dataset2_y)
 
     graph = graphviz.Source(export_graphviz(decTrees1[0], out_file = None))
-    graph.render("Iris", view = True)
+    graph.render("test", view = True)
