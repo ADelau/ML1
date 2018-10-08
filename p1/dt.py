@@ -24,11 +24,10 @@ import graphviz
 # ...
 
 N_POINTS = 1500
+depth = [1, 2, 4, 8, None]
 
 def create_trees(X, y):
-
-    depth = [1, 2, 4, 8, None]
-
+    
     decTrees = []
 
     for i in range(len(depth)):
@@ -38,8 +37,7 @@ def create_trees(X, y):
 
     return decTrees
 
-def makePlot():
-    
+def make_plot():
     
     files = ["decTree_1", "decTree_2", "decTree_4", "dec_Tree_8", "decTree_none"]
     filesTree = ["tree_" + x for x in files]
@@ -50,13 +48,14 @@ def makePlot():
 
     for i in range(len(depth)):
         plot_boundary(files[i], decTrees[i], X, y) #Il faut mettre les test et pas les train?
+        
         graph = graphviz.Source(export_graphviz(decTrees[i], out_file = None))
         graph.render(filesTree[i], view = False)
 
 def compute_accuracies():
     NB_TEST = 5
 
-    accuracies = [0] * 5
+    accuracies = [0] * len(depth)
 
     for i in range(NB_TEST):
         X, y = make_dataset1(N_POINTS)
@@ -66,12 +65,13 @@ def compute_accuracies():
         current_accuracy = [accuracy_score(testSetY, decTree.predict(testSetX)) for decTree in decTrees]
         accuracies = list(map(lambda x,y: x + y, accuracies, current_accuracy))
 
-    accuracies = [x/5 for x in accuracies]
+    accuracies = [x/len(depth) for x in accuracies]
 
     return accuracies
 
 if __name__ == "__main__":
 
+    make_plot()
     accuracies = compute_accuracies()
     print(accuracies)
    
