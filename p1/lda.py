@@ -45,6 +45,24 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
         # TODO your code here.
         # ====================
 
+        classes = list(set(y))
+        nb_classes = len(classes)
+        samples = [[]]*nb_classes
+
+        for i in range(len(y)):
+            index = classes.index(y[i])
+            samples[index].append(X[i])
+
+
+        means = [None]*nb_classes
+        covariances = [None]*nb_classes
+        for i in range(len(classes)):
+            means[i] = np.mean(np.array(samples[i]), axis = 0)
+            covariances[i] = np.cov(np.array(samples[i]))
+
+        print(means)
+        print(covariances)
+
         return self
 
     def predict(self, X):
@@ -89,5 +107,13 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
         pass
 
 if __name__ == "__main__":
-    from data import make_data
+    from data import make_dataset2
     from plot import plot_boundary
+
+    N_POINTS = 1500
+
+    X, y = make_dataset2(N_POINTS)
+
+    lda = LinearDiscriminantAnalysis()
+    lda.fit(X, y)
+
