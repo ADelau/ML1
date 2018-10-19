@@ -25,6 +25,7 @@ import graphviz
 
 N_POINTS = 1500
 depth = [1, 2, 4, 8, None]
+seed = 11
 
 def create_trees(X, y):
     
@@ -42,7 +43,7 @@ def make_plot():
     files = ["decTree_1", "decTree_2", "decTree_4", "dec_Tree_8", "decTree_none"]
     filesTree = ["tree_" + x for x in files]
 
-    X, y = make_dataset1(N_POINTS)
+    X, y = make_dataset2(N_POINTS, seed)
 
     decTrees = create_trees(X, y)
 
@@ -52,30 +53,27 @@ def make_plot():
         graph = graphviz.Source(export_graphviz(decTrees[i], out_file = None))
         graph.render(filesTree[i], view = False)
 
-def compute_accuracies():
+def compute_statistics():
     NB_TEST = 5
 
-    accuracies = [0] * len(depth)
+    accuracies = [[0] * len(depth)] * NB_TEST
 
     for i in range(NB_TEST):
-        X, y = make_dataset1(N_POINTS)
+        X, y = make_dataset2(N_POINTS, seed)
         trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2)
 
         decTrees = create_trees(trainSetX, trainSetY)
-        current_accuracy = [accuracy_score(testSetY, decTree.predict(testSetX)) for decTree in decTrees]
-        accuracies = list(map(lambda x,y: x + y, accuracies, current_accuracy))
+        accuracies[i] = [accuracy_score(testSetY, decTree.predict(testSetX)) for decTree in decTrees]
 
-    accuracies = [x/len(depth) for x in accuracies]
+    accuracies = np.array(accuracies)
+    mean = np.mean(accuracies, axis = 1)
+    std = np.std(accuracies, axis = 1)
 
-    return accuracies
+    return mean, std
 
 if __name__ == "__main__":
 
-    make_plot()
-    accuracies = compute_accuracies()
-    print(accuracies)
-   
-    #graph = graphviz.Source(export_graphviz(decTrees1[0], out_file = None))
-    #graph.render("test", view = True)
-
-
+    #make_plot()
+    mean, std = compute_statistics()
+    print("mean = {}".format(mean))
+    print("std = {}".format(std))

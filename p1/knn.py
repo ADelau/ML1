@@ -57,13 +57,15 @@ def validation(dataset_x, dataset_y, n_neighbors, K=10):
             scores[0] += [number]
             scores[1] += [score]
 
+        print(scores)
+
         plt.figure()
         plt.plot(scores[0], scores[1])
-        plt.savefig(testStr + "scores.pdf")
+        #plt.savefig(testStr + "scores.pdf")
         plt.close()
 
 if __name__ == "__main__":
     dataset_x, dataset_y = make_dataset2(1500, 687)
     n_neighbors = [1, 5, 25, 125, 625, 1200]
-    boundary(dataset_x, dataset_y, 1200, n_neighbors)
+    #boundary(dataset_x, dataset_y, 1200, n_neighbors)
     validation(dataset_x, dataset_y, n_neighbors)
