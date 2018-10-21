@@ -60,14 +60,14 @@ def compute_statistics():
 
     for i in range(NB_TEST):
         X, y = make_dataset2(N_POINTS, seed)
-        trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2)
+        trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2, random_state = seed)
 
         decTrees = create_trees(trainSetX, trainSetY)
         accuracies[i] = [accuracy_score(testSetY, decTree.predict(testSetX)) for decTree in decTrees]
 
     accuracies = np.array(accuracies)
-    mean = np.mean(accuracies, axis = 1)
-    std = np.std(accuracies, axis = 1)
+    mean = np.mean(accuracies, axis = 0)
+    std = np.std(accuracies, axis = 0)
 
     return mean, std
 
