@@ -47,15 +47,15 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
 
         classes = list(set(y))
         nb_classes = len(classes)
-        samples = [[]]*nb_classes
-        print(samples)
+
+        samples = []
+        for i in range(nb_classes):
+            samples.append([])
 
         #samples[i][j][k] correspond to the kth element of the jth sample corresponding to the class classes[i].
         for i in range(len(y)):
             index = classes.index(y[i])
-            print(index)
-            (samples[index]).append(X[i])
-            print(samples)
+            samples[index].append(toAppend)
 
         samples = np.asarray(samples, dtype = np.float)
         print(samples)

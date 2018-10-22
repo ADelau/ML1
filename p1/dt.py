@@ -15,6 +15,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from plot import plot_boundary
 import graphviz
+from sklearn.model_selection import validation_curve
 
 
 
@@ -56,14 +57,14 @@ def make_plot():
 def compute_statistics():
     NB_TEST = 5
 
-    accuracies = [[0] * len(depth)] * NB_TEST
+    accuracies = []
 
     for i in range(NB_TEST):
         X, y = make_dataset2(N_POINTS, seed)
         trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2, random_state = seed)
 
         decTrees = create_trees(trainSetX, trainSetY)
-        accuracies[i] = [accuracy_score(testSetY, decTree.predict(testSetX)) for decTree in decTrees]
+        accuracies.append([accuracy_score(testSetY, decTree.predict(testSetX)) for decTree in decTrees])
 
     accuracies = np.array(accuracies)
     mean = np.mean(accuracies, axis = 0)
@@ -71,9 +72,29 @@ def compute_statistics():
 
     return mean, std
 
+def plot_accuracy():
+    paramRange = [1, 2, 4, 8]
+    X, y = make_dataset2(N_POINTS, seed)
+    trainScores, testScores = validation_curve(DecisionTreeClassifier(), X, y, param_name = "max_depth", param_range = paramRange, cv = 5, scoring = "accuracy")
+    trainScoresMean = np.mean(trainScores, axis=1)
+    testScoresMean = np.mean(testScores, axis=1)
+    plt.title("Accuracies")
+    plt.xlabel("depth")
+    plt.ylabel("accuracy")
+    lw = 3
+    plt.plot(paramRange, trainScoresMean, label="Training score", color="green", lw = lw)
+    plt.plot(paramRange, testScoresMean, label="Test score", color = "red", lw = lw)
+    plt.legend(loc="best")
+    plt.savefig("validation_curve")
+    plt.close()
+
+
+
 if __name__ == "__main__":
 
     #make_plot()
     mean, std = compute_statistics()
     print("mean = {}".format(mean))
     print("std = {}".format(std))
+    
+    plot_accuracy()
