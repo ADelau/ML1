@@ -10,6 +10,7 @@ import numpy as np
 import math
 from sklearn.model_selection import train_test_split
 from plot import plot_boundary
+from sklearn.metrics import accuracy_score
 
 from sklearn.base import BaseEstimator, ClassifierMixin
 
@@ -171,11 +172,39 @@ def plot_decision_boundary():
         trainSetX, testSetX, trainSetY, testSetY = train_test_split(X[i], y[i], test_size = 0.2, random_state = SEED)
         estimator = LinearDiscriminantAnalysis()
         estimator.fit(trainSetX, trainSetY)
-
-        print("testSetX = {}".format(testSetX))
-        print("testSetY = {}".format(testSetY))
         
         plot_boundary(files[i], estimator, testSetX, testSetY)
+
+def compute_statistics():
+    SEEDS = [11, 13, 17, 23, 27]
+
+    accuracies1 = []
+    accuracies2 = []
+
+    for i in range(len(SEEDS)):
+        X1, y1 = make_dataset2(N_POINTS, SEEDS[i])
+        X2, y2 = make_dataset2(N_POINTS, SEEDS[i])
+        trainSetX1, testSetX1, trainSetY1, testSetY1 = train_test_split(X1, y1, test_size = 0.2, random_state = SEEDS[i])
+        trainSetX2, testSetX2, trainSetY2, testSetY2 = train_test_split(X2, y2, test_size = 0.2, random_state = SEEDS[i])
+
+        lda1 = LinearDiscriminantAnalysis()
+        lda2 = LinearDiscriminantAnalysis()
+        lda1.fit(trainSetX1, trainSetY1)
+        lda2.fit(trainSetX2, trainSetY2)
+
+        accuracies1.append(accuracy_score(testSetY1, lda1.predict(testSetX1)))
+        accuracies2.append(accuracy_score(testSetY2, lda2.predict(testSetX2)))
+
+    accuracies1 = np.array(accuracies1)
+    accuracies2 = np.array(accuracies2)
+
+    mean1 = np.mean(accuracies1)
+    mean2 = np.mean(accuracies2)
+    std1 = np.std(accuracies1)
+    std2 = np.std(accuracies2)
+
+    return mean1, std1, mean2, std2
+
 if __name__ == "__main__":
     from data import make_dataset1
     from data import make_dataset2
@@ -199,4 +228,10 @@ if __name__ == "__main__":
     print("predicted = {}".format(predicted))
 
     plot_decision_boundary()
+
+    mean1, std1, mean2, std2 = compute_statistics()
+    print("mean1 = {}\n".format(mean1))
+    print("mean2 = {}\n".format(mean2))
+    print("std1 = {}\n".format(std1))
+    print("std2 = {}\n".format(std2))
 

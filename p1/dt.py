@@ -56,14 +56,14 @@ def make_plot():
         graph.render(filesTree[i], view = False)
 
 def compute_statistics():
-    NB_TEST = 5
+    SEEDS = [11, 13, 17, 23, 27]
 
     trainAccuracies = []
     testAccuracies = []
 
-    for i in range(NB_TEST):
-        X, y = make_dataset2(N_POINTS, SEED)
-        trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2, random_state = SEED)
+    for i in range(len(SEEDS)):
+        X, y = make_dataset2(N_POINTS, SEEDS[i])
+        trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2, random_state = SEEDS[i])
 
         decTrees = create_trees(trainSetX, trainSetY)
         testAccuracies.append([accuracy_score(testSetY, decTree.predict(testSetX)) for decTree in decTrees])
