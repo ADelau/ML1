@@ -12,60 +12,110 @@ from matplotlib import pyplot as plt
 from data import make_dataset1, make_dataset2
 from plot import plot_boundary
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import cross_val_score
+from statistics import mean
 
-testStr = "D:/OneDrive/Cours/master1/machine/projet1/p1/"
+saveDirectory = "D:/OneDrive/Cours/master1/machine/projet1/p1/"
 
-# (Question 2)
-# Put your funtions here
-def boundary(dataset_x, dataset_y, LS_size, n_neighbors) :
-    for number in n_neighbors :
-        neigh = KNeighborsClassifier(number)
-        neigh.fit(dataset_x[0:LS_size], dataset_y[0:LS_size])
-        plot_boundary(testStr + "n_neighbours" + str(number), neigh, dataset_x[LS_size + 1:], dataset_y[LS_size + 1:], title="Number of Neighbours = %s" % str(number))
+def getClassifier(dataset_x, dataset_y, n_neighbors) :
+    """
+    Given a learning sanple and a number of neigbours, return a 
+    KNeighborsClassifier object fitting this dataset with the given number
+    of neighbours.
 
-def validation(dataset_x, dataset_y, n_neighbors, K=10):
-        scores = [[], []]
+    Arguments:
+    ----------
+    - `dataset_x`: the X values of the LS.
+    - `dataset_y`: the Y values of the LS.
+    - `n_neighbors`: the number of neighbours for the KNeighborsClassifier.
 
-        for number in n_neighbors :
-            neigh = KNeighborsClassifier(number)
-            fragment_size = len(dataset_y)//K
-            score = 0
-            for x in range(0, K-1):
-                if x == 0 :
-                    LS_X = dataset_x[fragment_size:]
-                    LS_Y = dataset_y[fragment_size:]
-                    TS_X = dataset_x[0:fragment_size]
-                    TS_Y = dataset_y[0:fragment_size]
-                    
-                elif x == K-1:
-                    LS_X = dataset_x[0:x * fragment_size]
-                    LS_Y = dataset_y[0:x * fragment_size]
-                    TS_X = dataset_x[x * fragment_size:]
-                    TS_Y = dataset_y[x * fragment_size:]
+    Return:
+    -------
+    - A KNeighborsClassifier object fitting the LS.
+    """
 
-                else:
-                    LS_X = np.concatenate((dataset_x[0:x * fragment_size], (dataset_x[(x+1) * fragment_size:])))
-                    LS_Y = np.concatenate((dataset_y[0:x * fragment_size], (dataset_y[(x+1) * fragment_size:])))
-                    TS_X = dataset_x[x * fragment_size:(x+1) * fragment_size]
-                    TS_Y = dataset_y[x * fragment_size:(x+1) * fragment_size:]
+    # Create classifier with the given number of neighbours
+    neigh = KNeighborsClassifier(n_neighbors)
 
-                neigh.fit(LS_X, LS_Y)
-                score += neigh.score(TS_X, TS_Y)
+    # Fit the model over the learning sample
+    neigh.fit(dataset_x, dataset_y)
 
-            score /= K
-            #print(str(number) + " scors : " + str(score))
-            scores[0] += [number]
-            scores[1] += [score]
+    return neigh
 
-        print(scores)
+def draw_boundary(classifier, dataset_x, dataset_y, n_neighbors):
+    """
+    Given a dataset, and a KNeighborsClassifier already trained with 
+    'n_neighbors' neighbours, plot the boundary for the dataset.
 
-        plt.figure()
-        plt.plot(scores[0], scores[1])
-        #plt.savefig(testStr + "scores.pdf")
-        plt.close()
+    Arguments:
+    ----------
+    - `classifier`: a KNeighborsClassifier already trained.
+    - `dataset_x`: the X values of the dataset.
+    - `dataset_y`: the Y values of the dataset.
+    - `n_neighbors`: the number of neighbours for the KNeighborsClassifier.
+    """
+
+    #Plot the boundaries for the test samples
+    plot_boundary(saveDirectory + "n_neighbours" + str(n_neighbors), 
+                    classifier, dataset_x, dataset_y,
+                    title="Number of Neighbours = %s" % str(n_neighbors))
+
+def crossValidation(dataset_x, dataset_y, n_neigbours, KFlod=10):
+    """
+    Given a dataset, and a KNeighborsClassifier already trained with 
+    'n_neighbors' neighbours, plot the boundary for the dataset.
+
+    Arguments:
+    ----------
+    - `dataset_x`: the X values of the dataset.
+    - `dataset_y`: the Y values of the dataset.
+    - `n_neighbors`: the number of neighbours for the KNeighborsClassifier.
+    - `KFlod`: the number of fold in the cross validation.
+
+    Return:
+    -------
+    - The score of the cross validation.
+    """
+    # Create classifier with the given number of neighbours
+    neigh = KNeighborsClassifier(number)
+
+    # Compute the cross-validation score of our data
+    crossScore = cross_val_score(neigh, dataset_x, dataset_y,
+                                 cv=KFlod, n_jobs=-1)
+
+    return mean(crossScore)
 
 if __name__ == "__main__":
     dataset_x, dataset_y = make_dataset2(1500, 687)
     n_neighbors = [1, 5, 25, 125, 625, 1200]
-    #boundary(dataset_x, dataset_y, 1200, n_neighbors)
-    validation(dataset_x, dataset_y, n_neighbors)
+
+    # Question 1
+    # LS_size = 1200
+    # for number in n_neighbors:
+    #     classifier = getClassifier(dataset_x[0:LS_size], dataset_y[0:LS_size], number)
+    #     draw_boundary(classifier, dataset_x[LS_size + 1:], dataset_y[LS_size + 1:], number)
+
+    # Question 2
+    scores = [[], []]
+    step = 30
+
+    # Loop over the number of neighbours used to the classifier
+    for number in range(1,1200,step) :
+
+        # Get the cross validation score
+        crossScore = crossValidation(dataset_x, dataset_y, number)
+        
+        # Add this score to the array
+        scores[0].append(number)
+        scores[1].append(crossScore)
+
+    print("Best number of neighbours = ", scores[1].index(max(scores[1])) * step)
+    print("Score of the best number of neighbours = ", max(scores[1]))
+    
+    plt.figure()
+    plt.plot(scores[0], scores[1])
+    plt.savefig(saveDirectory + "scores.pdf")
+    plt.show()
+    plt.close()
+
+    # validation(dataset_x, dataset_y, n_neighbors)
