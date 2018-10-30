@@ -9,8 +9,12 @@ Project 1 - Classification algorithms
 import numpy as np
 import math
 from sklearn.model_selection import train_test_split
+from plot import plot_boundary
 
 from sklearn.base import BaseEstimator, ClassifierMixin
+
+N_POINTS = 1500
+SEED = 11
 
 class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
 
@@ -150,30 +154,47 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
         self.covariance = None
         self.priorProba = None
 
+def plot_decision_boundary():
+    files =  ["lda_dataset1", "lda_dataset2"]
+    X = []
+    y = []
 
+    tmpX, tmpY = make_dataset1(N_POINTS, SEED)
+    X.append(tmpX)
+    y.append(tmpY)
+
+    tmpX, tmpY = make_dataset2(N_POINTS, SEED)
+    X.append(tmpX)
+    y.append(tmpY)
+
+    for i in range(len(files)):
+        trainSetX, testSetX, trainSetY, testSetY = train_test_split(X[i], y[i], test_size = 0.2, random_state = SEED)
+        estimator = LinearDiscriminantAnalysis()
+        estimator.fit(trainSetX, trainSetY)
+
+        plot_boundary(files[i], estimator, testSetX, trainSetY)
 
 if __name__ == "__main__":
+    from data import make_dataset1
     from data import make_dataset2
     from plot import plot_boundary
 
-    N_POINTS = 1500
-    seed = 11
 
-    X, y = make_dataset2(N_POINTS, seed)
-    trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2, random_state = seed)
+    X, y = make_dataset1(N_POINTS, SEED)
+    trainSetX, testSetX, trainSetY, testSetY = train_test_split(X, y, test_size = 0.2, random_state = SEED)
 
     lda = LinearDiscriminantAnalysis()
     lda.fit(trainSetX, trainSetY)
 
-    """
-    print(lda.classes)
-    print(lda.means)
-    print(lda.covariance)
-    print(lda.priorProba)
-    """
+    print("classe = {}".format(lda.classes))
+    print("means = {}".format(lda.means))
+    print("covariance = {}".format(lda.covariance))
+    print("priorProba = {}".format(lda.priorProba))
 
     proba = lda.predict_proba(testSetX)
     print("proba = {}".format(proba))
     predicted = lda.predict(testSetX)
     print("predicted = {}".format(predicted))
+
+    plot_decision_boundary()
 
