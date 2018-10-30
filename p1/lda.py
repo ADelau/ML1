@@ -132,12 +132,12 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
             denum = sum(list(map(lambda x, y: x * y, densities, self.priorProba)))
 
             probabilities = []
-            for i in range(len(self.classes)):
+            for i in range(len(self.classes)): 
                 probabilities.append(densities[i] * self.priorProba[i] / denum)
 
             p.append(probabilities)
 
-        return p
+        return np.array(p)
 
     def probX(self, X, classIndex):
         #compute fkx
@@ -172,8 +172,10 @@ def plot_decision_boundary():
         estimator = LinearDiscriminantAnalysis()
         estimator.fit(trainSetX, trainSetY)
 
-        plot_boundary(files[i], estimator, testSetX, trainSetY)
-
+        print("testSetX = {}".format(testSetX))
+        print("testSetY = {}".format(testSetY))
+        
+        plot_boundary(files[i], estimator, testSetX, testSetY)
 if __name__ == "__main__":
     from data import make_dataset1
     from data import make_dataset2
