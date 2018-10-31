@@ -46,10 +46,6 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
         if y.shape[0] != X.shape[0]:
             raise ValueError("The number of samples differs between X and y")
 
-        # ====================
-        # TODO your code here.
-        # ====================
-
         self.classes = sorted(list(set(y)))
         nb_classes = len(self.classes)
 
@@ -95,10 +91,6 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
             The predicted classes, or the predict values.
         """
 
-        # ====================
-        # TODO your code here.
-        # ====================
-
         proba = self.predict_proba(X)
         proba = np.asarray(proba, dtype = np.float)
         predicted = [self.classes[np.argmax(sampleProba)] for sampleProba in proba]
@@ -118,10 +110,6 @@ class LinearDiscriminantAnalysis(BaseEstimator, ClassifierMixin):
             The class probabilities of the input samples. Classes are ordered
             by lexicographic order.
         """
-
-        # ====================
-        # TODO your code here.
-        # ====================
 
         p = []
 
@@ -182,7 +170,7 @@ def compute_statistics():
     accuracies2 = []
 
     for i in range(len(SEEDS)):
-        X1, y1 = make_dataset2(N_POINTS, SEEDS[i])
+        X1, y1 = make_dataset1(N_POINTS, SEEDS[i])
         X2, y2 = make_dataset2(N_POINTS, SEEDS[i])
         trainSetX1, testSetX1, trainSetY1, testSetY1 = train_test_split(X1, y1, test_size = 0.2, random_state = SEEDS[i])
         trainSetX2, testSetX2, trainSetY2, testSetY2 = train_test_split(X2, y2, test_size = 0.2, random_state = SEEDS[i])
