@@ -10,9 +10,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 from data import make_dataset1, make_dataset2
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import export_graphviz
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from plot import plot_boundary
+import graphviz
 from sklearn.model_selection import validation_curve
 
 N_POINTS = 1500
