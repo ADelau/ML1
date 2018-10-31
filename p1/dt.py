@@ -48,7 +48,7 @@ def create_trees(X, y, seed):
 
 def make_plot():
 
-    """Create files containing plots of decision boundary.
+    """Create files containing plots of decision boundary for each depth in DEPTH.
 
     Parameters
     ----------
@@ -68,13 +68,9 @@ def make_plot():
 
     decTrees = create_trees(trainSetX, trainSetY, SEED)
 
+    # Plot decision boundary
     for i in range(len(DEPTH)):
-        # Plot decision boundary
         plot_boundary(files[i], decTrees[i], testSetX, testSetY)
-        
-        # Plot the decision tree
-        graph = graphviz.Source(export_graphviz(decTrees[i], out_file = None))
-        graph.render(filesTree[i], view = False)
 
 def compute_statistics():
     """Compute statistics of DecisionTreeClassifier estimator.
@@ -86,11 +82,11 @@ def compute_statistics():
     Returns
     -------
     trainMean : list of shape [n_depth]
-        Mean accuracies of the decision trees tested on the learning sample for each depth 
+        Mean accuracies of the decision trees tested on the learning samples for each depth 
     testMean : list of shape [n_depth]
-        Mean accuracies of the decision trees tested on the test sample for each depth
+        Mean accuracies of the decision trees tested on the test samples for each depth
     testStd : list of shape [n_depth]
-        Standard deviation of the accuracies of the decision trees tested on the test sample for 
+        Standard deviation of the accuracies of the decision trees tested on the test samples for 
         each depth  
     """
 
