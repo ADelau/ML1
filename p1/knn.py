@@ -85,28 +85,27 @@ def cross_validation(datasetX, datasetY, nNeighbors, KFlod=10):
     return mean(crossScore)
 
 if __name__ == "__main__":
-    seed = 687
+    SEED = 687
+    N_POINTS = 1500
 
-    datasetX, datasetY = make_dataset2(1500, seed)
-    nNeighbors = [1, 5, 25, 125, 625, 1200]
-
-    LS_size = 1200
+    datasetX, datasetY = make_dataset2(N_POINTS, SEED)
+    N_NEIGHBOURS = [1, 5, 25, 125, 625, 1200]
 
     # Split the dataset in Traning and Learning set
     xTrain, xTest, yTrain, yTest = \
-        train_test_split(datasetX, datasetY, test_size = 0.2,random_state = seed)
+        train_test_split(datasetX, datasetY, test_size = 0.2,random_state = SEED)
 
     # Question 1
-    for number in nNeighbors:
+    for number in N_NEIGHBOURS:
         classifier = get_classifier(xTrain, yTrain, number)
         draw_boundary(classifier, xTest, yTest, number)
 
     # Question 2
     scores = [[], []]
-    step = 100
+    STEP = 100
 
     # Loop over the number of neighbours used to the classifier
-    for number in range(1,1200,step) :
+    for number in range(N_NEIGHBOURS[0], N_NEIGHBOURS[-1], STEP) :
 
         # Get the cross validation score
         crossScore = cross_validation(datasetX, datasetY, number)
@@ -115,7 +114,7 @@ if __name__ == "__main__":
         scores[0].append(number)
         scores[1].append(crossScore)
 
-    print("Best number of neighbours = ", scores[1].index(max(scores[1])) * step)
+    print("Best number of neighbours = ", scores[1].index(max(scores[1])) * STEP)
     print("Score of the best number of neighbours = ", max(scores[1]))
     
     plt.figure()
